@@ -50,7 +50,7 @@ def desk_ref(sig):
     bits = (a << 8) | (b & 0xff); A = '0123456789ABCDEFGHJKMNPQRSTVWXYZ'; out = ''
     for _ in range(8): out = A[bits & 31] + out; bits >>= 5
     return f'DR-{out[:4]}-{out[4:]}'
-SIG = 'Jayanie Bogahawatte'
+SIG = re.search(r'^signature: (.+)$', open(kb + '/src/routes/kb/incidents/4471/problems/+page.svx').read(), re.M).group(1).strip()  # the page's own frontmatter
 ref = desk_ref(SIG)
 reviewed = '2026-11-07'
 age = (datetime.date.fromisoformat(sys.argv[3]) - datetime.date.fromisoformat(reviewed)).days

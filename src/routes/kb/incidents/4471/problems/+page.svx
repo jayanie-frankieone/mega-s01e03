@@ -4,7 +4,7 @@ title: '#4471 · three problems, not one'
 owner: Jayanie Bogahawatte
 status: open
 reviewed: 2026-11-07
-signature: Jayanie Bogahawatte
+signature: v1.eyJzdWIiOiIxNDU1IiwiYXVkIjoiY2hhbGxlbmdlOndoYXQtaXQtc2hvd3MiLCJpYXQiOjE3OTQwMTc0OTQsImV4cCI6MTc5NDEwMzg5NH0.BzJ3uYjGQRdb-U0cqOANhfoWR-e3XitjG1tpNy_XoVA
 ---
 
 <script>

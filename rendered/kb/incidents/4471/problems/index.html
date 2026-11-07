@@ -55,7 +55,7 @@ aside.warn { border-color: var(--warn); background: var(--warn-bg); }
 <ul><li>The export has duplicate rows. One id is one report.</li><li>A report's problem comes from its tenant and the way it came in (<code>causes.ts</code>), not from the intake tag. Intake guesses from the reporter's browser, and it got many of these wrong.</li><li>The one-day moves are the ids in <code>desk-notes.json</code>. Every other report that names two dates names an exact day/month swap.</li><li>Counts are the desk's own: the desk files the one-day moves under their tenant's cause, so the <code>parser</code> count includes them, as marked in the table. They are tracked in their own ticket too.</li><li>The table is computed from the data each time the page renders. If the desk merges more reports into #4471, the counts follow.</li></ul>
 <h2>Why they were merged</h2>
 <p><a href="/kb/decisions/0001-dedupe-by-subject">Decision 0001</a> merges reports whose subject lines match, without reading the body. All three problems arrive with the same subjects ("Wrong day on the invite", "Date is wrong"), so they all landed in one ticket. Subject lines say how a problem looks, not what causes it.</p>
-<p class="stamp">desk ref <b>DR-KTYD-Q5F1</b></p>
+<p class="stamp">desk ref <b>DR-XMSH-TBE9</b></p>
   </main>
   <footer>Pages are written by people. Tables and charts are built from data at render time.</footer>
 </div>
