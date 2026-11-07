@@ -44,18 +44,19 @@ export function splitTicket(
   }
   const groups = [...by.entries()]
     .map(([problem, rs]) => {
-      const days = rs.map((r) => r.receivedAt.slice(0, 10)).sort();
       const filedHere = merged.filter((r) => (causeOf(r, tenantOf(r)) ?? 'unplaced') === problem);
+      const counted = problem === 'one-day' ? rs : filedHere; // every column counts the same reports
+      const days = counted.map((r) => r.receivedAt.slice(0, 10)).sort();
       const alsoOneDay = problem === 'one-day' ? 0 : filedHere.filter((r) => oneDayMove.includes(r.id)).length;
       return {
         problem,
         reports: rs,
-        deskCount: problem === 'one-day' ? rs.length : filedHere.length,
+        deskCount: counted.length,
         alsoOneDay,
-        tenants: new Set(rs.map((r) => r.tenant)).size,
+        tenants: new Set(counted.map((r) => r.tenant)).size,
         firstSeen: days[0],
         lastSeen: days[days.length - 1],
-        taggedAs: rs.reduce<Record<string, number>>((n, r) => ({ ...n, [r.meta.intakeTag]: (n[r.meta.intakeTag] ?? 0) + 1 }), {}),
+        taggedAs: counted.reduce<Record<string, number>>((n, r) => ({ ...n, [r.meta.intakeTag]: (n[r.meta.intakeTag] ?? 0) + 1 }), {}),
       };
     })
     .sort((a, b) => b.deskCount - a.deskCount);

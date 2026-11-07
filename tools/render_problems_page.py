@@ -17,6 +17,7 @@ def problem(r):
 TEXT = {'parser': 'Shared parser reads day-first dates month first', 'hint': 'booking-v3 form hint says MM/DD, the form reads day first',
         'one-day': 'Date moves by one day across time zones', 'unplaced': 'No tenant on file'}
 ISSUE = {'parser': 1, 'hint': 2, 'one-day': 3}
+STATE = {'parser': 'fixed', 'hint': "won't fix"}  # engineering update on #4471, closed 5 October
 groups = {}
 for r in merged: groups.setdefault(problem(r), []).append(r)
 def desk_cause(r):  # the desk's CauseTable view: one-day moves stay under their tenant's cause
@@ -30,6 +31,7 @@ def desk_count(p, rs):
 trs = []
 for p, rs in sorted(groups.items(), key=lambda x: -desk_count(x[0], x[1])[0]):
     dc, also = desk_count(p, rs)
+    rs = rs if p == 'one-day' else [r for r in merged if desk_cause(r) == p]  # every column counts the same reports
     count = f'{dc}<br><span class="what">incl. {also} one-day</span>' if also else f'{dc}'
     d = sorted(r['receivedAt'][:10] for r in rs)
     tags = {}
@@ -37,7 +39,7 @@ for p, rs in sorted(groups.items(), key=lambda x: -desk_count(x[0], x[1])[0]):
     tg = ' · '.join(f'{k} ×{v}' for k, v in sorted(tags.items(), key=lambda x: -x[1]))
     n = ISSUE.get(p)
     link = f'<a href="https://github.com/jayanie-frankieone/mega-s01e03/issues/{n}">#{n}</a>' if n else '<span class="none">no ticket</span>'
-    trs.append(f'<tr><td><code>{p}</code><br><span class="what">{html.escape(TEXT[p])}</span></td><td>{count}</td><td>{len({r["tenant"] for r in rs})}</td><td>{d[0]} → {d[-1]}</td><td class="tags">{tg}</td><td>{link}</td></tr>')
+    trs.append(f'<tr><td><code>{p}</code><br><span class="what">{html.escape(TEXT[p])}</span></td><td>{count}</td><td>{len({r["tenant"] for r in rs})}</td><td>{d[0]} → {d[-1]}</td><td class="tags">{tg}</td><td>{html.escape(STATE[p]) if p in STATE else '<span class="none">open</span>'}</td><td>{link}</td></tr>')
 def fnv(t, seed):
     h = seed
     for ch in t.encode('utf-16-le')[::2] if t.isascii() else [ord(c) for c in t]:
@@ -66,7 +68,7 @@ body = []
 for block in re.split(r'\n\s*\n', page.strip()):
     b = block.strip()
     if b.startswith('<ProblemTable'):
-        body.append(f'<p class="sum"><strong>{len(merged)}</strong> reports merged into #4471 · <strong>{len(groups)}</strong> problems</p>\n<table><thead><tr><th>problem</th><th>reports</th><th>tenants</th><th>seen</th><th>intake tagged</th><th>tracked in</th></tr></thead><tbody>\n' + '\n'.join(trs) + '\n</tbody></table>')
+        body.append(f'<p class="sum"><strong>{len(merged)}</strong> reports merged into #4471 · <strong>{len(groups)}</strong> problems</p>\n<table><thead><tr><th>problem</th><th>reports</th><th>tenants</th><th>seen</th><th>intake tagged</th><th>state</th><th>tracked in</th></tr></thead><tbody>\n' + '\n'.join(trs) + '\n</tbody></table>')
     elif b.startswith('<Callout'):
         inner = re.sub(r'</?Callout[^>]*>', '', b).strip()
         body.append(f'<aside class="warn">{md(" ".join(inner.split()))}</aside>')

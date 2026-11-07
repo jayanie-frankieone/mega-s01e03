@@ -6,7 +6,12 @@
   import { PROBLEM_TEXT, splitTicket, type Problem } from '#lib/kb/problems';
 
   // issues: where each problem is tracked now, problem → link.
-  let { ticket, issues = {} }: { ticket: number; issues?: Partial<Record<Problem, string>> } = $props();
+  // states: what engineering did about each problem, problem → word. Missing means still open.
+  let {
+    ticket,
+    issues = {},
+    states = {},
+  }: { ticket: number; issues?: Partial<Record<Problem, string>>; states?: Partial<Record<Problem, string>> } = $props();
 
   const split = $derived(splitTicket(reports as Report[], ticket, tenantOf, notes.oneDayMove));
   const tags = (t: Record<string, number>) =>
@@ -24,7 +29,7 @@
 
 <table>
   <thead>
-    <tr><th>problem</th><th>reports</th><th>tenants</th><th>seen</th><th>intake tagged</th><th>tracked in</th></tr>
+    <tr><th>problem</th><th>reports</th><th>tenants</th><th>seen</th><th>intake tagged</th><th>state</th><th>tracked in</th></tr>
   </thead>
   <tbody>
     {#each split.groups as g (g.problem)}
@@ -34,6 +39,7 @@
         <td>{g.tenants}</td>
         <td>{g.firstSeen} → {g.lastSeen}</td>
         <td class="tags">{tags(g.taggedAs)}</td>
+        <td>{#if states[g.problem]}{states[g.problem]}{:else}<span class="none">open</span>{/if}</td>
         <td>{#if issues[g.problem]}<a href={issues[g.problem]}>#{issues[g.problem]?.split('/').pop()}</a>{:else}<span class="none">no ticket</span>{/if}</td>
       </tr>
     {/each}

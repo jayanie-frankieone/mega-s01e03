@@ -17,16 +17,21 @@ signature: Jayanie Bogahawatte
     hint: 'https://github.com/jayanie-frankieone/mega-s01e03/issues/2',
     'one-day': 'https://github.com/jayanie-frankieone/mega-s01e03/issues/3',
   };
+  // Engineering's update on #4471 (closed 5 October).
+  const states = { parser: 'fixed', hint: "won't fix" };
 </script>
 
-[#4471](/kb/incidents/4471) is marked **known**: one bug, one fix queued. Read report by report,
-it holds three problems. The queued parser fix closes only the first one.
+[#4471](/kb/incidents/4471) was marked **known**: one bug, one fix. Read report by report, it
+holds three problems. Engineering closed #4471 on 5 October with two answers, and the third
+problem is still open.
 
-<ProblemTable ticket={4471} {issues} />
+<ProblemTable ticket={4471} {issues} {states} />
 
 <Callout kind="warn">
-The parser fix will not stop the other two. Reports from booking-v3 forms and one-day moves will
-keep coming after it ships. Each problem now has its own ticket, linked in the table.
+#4471 is closed, but not every report in it is answered. `parser` is fixed
+(`fix(dates): parse dd/mm for eu locales`). `hint` won't be fixed because the booking-v3 form is
+retired. The **one-day move** was in neither answer and is still open in its own ticket. Its
+reports will keep coming after the parser fix.
 </Callout>
 
 ## The three problems
