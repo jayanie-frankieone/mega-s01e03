@@ -53,6 +53,8 @@ parser. The desk already noted these reports (`oneDayMove`), but the #4471 page 
   intake tag. Intake guesses from the reporter's browser, and it got many of these wrong.
 - The one-day moves are the ids in `desk-notes.json`. Every other report that names two dates
   names an exact day/month swap.
+- Counts are the desk's own: the desk files the one-day moves under their tenant's cause, so the
+  `parser` count includes them, as marked in the table. They are tracked in their own ticket too.
 - The table is computed from the data each time the page renders. If the desk merges more
   reports into #4471, the counts follow.
 

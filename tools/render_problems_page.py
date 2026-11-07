@@ -19,15 +19,25 @@ TEXT = {'parser': 'Shared parser reads day-first dates month first', 'hint': 'bo
 ISSUE = {'parser': 1, 'hint': 2, 'one-day': 3}
 groups = {}
 for r in merged: groups.setdefault(problem(r), []).append(r)
+def desk_cause(r):  # the desk's CauseTable view: one-day moves stay under their tenant's cause
+    t = T.get(r['tenant'])
+    if not t or t['locale'] not in DAY_FIRST: return 'unplaced'
+    return 'hint' if r['channel'] == 'form' and t['form'] == 'booking-v3' else 'parser'
+def desk_count(p, rs):
+    if p == 'one-day': return len(rs), 0
+    here = [r for r in merged if desk_cause(r) == p]
+    return len(here), sum(1 for r in here if r['id'] in notes['oneDayMove'])
 trs = []
-for p, rs in sorted(groups.items(), key=lambda x: -len(x[1])):
+for p, rs in sorted(groups.items(), key=lambda x: -desk_count(x[0], x[1])[0]):
+    dc, also = desk_count(p, rs)
+    count = f'{dc}<br><span class="what">incl. {also} one-day</span>' if also else f'{dc}'
     d = sorted(r['receivedAt'][:10] for r in rs)
     tags = {}
     for r in rs: tags[r['meta']['intakeTag']] = tags.get(r['meta']['intakeTag'], 0) + 1
     tg = ' · '.join(f'{k} ×{v}' for k, v in sorted(tags.items(), key=lambda x: -x[1]))
     n = ISSUE.get(p)
     link = f'<a href="https://github.com/jayanie-frankieone/mega-s01e03/issues/{n}">#{n}</a>' if n else '<span class="none">no ticket</span>'
-    trs.append(f'<tr><td><code>{p}</code><br><span class="what">{html.escape(TEXT[p])}</span></td><td>{len(rs)}</td><td>{len({r["tenant"] for r in rs})}</td><td>{d[0]} → {d[-1]}</td><td class="tags">{tg}</td><td>{link}</td></tr>')
+    trs.append(f'<tr><td><code>{p}</code><br><span class="what">{html.escape(TEXT[p])}</span></td><td>{count}</td><td>{len({r["tenant"] for r in rs})}</td><td>{d[0]} → {d[-1]}</td><td class="tags">{tg}</td><td>{link}</td></tr>')
 def fnv(t, seed):
     h = seed
     for ch in t.encode('utf-16-le')[::2] if t.isascii() else [ord(c) for c in t]:

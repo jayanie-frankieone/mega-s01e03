@@ -30,7 +30,7 @@
     {#each split.groups as g (g.problem)}
       <tr>
         <td><code>{g.problem}</code><br /><span class="what">{PROBLEM_TEXT[g.problem]}</span></td>
-        <td>{g.reports.length}</td>
+        <td>{g.deskCount}{#if g.alsoOneDay}<br /><span class="what">incl. {g.alsoOneDay} one-day</span>{/if}</td>
         <td>{g.tenants}</td>
         <td>{g.firstSeen} → {g.lastSeen}</td>
         <td class="tags">{tags(g.taggedAs)}</td>
