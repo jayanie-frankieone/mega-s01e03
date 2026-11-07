@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>#4471 · three problems, not one · support kb</title>
+<style>
+  :root {
+    --bg: #fbfaf7; --fg: #1d1d1b; --muted: #6b6a66; --line: #e3e0d8;
+    --accent: #2f6f5e; --warn: #b4501f; --warn-bg: #fbeee6; --note-bg: #eef5f2;
+    --mono: ui-monospace, 'Cascadia Code', Menlo, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #171716; --fg: #ecebe6; --muted: #9c9a93; --line: #34332f;
+      --accent: #6fbfa6; --warn: #f0905d; --warn-bg: #3a2418; --note-bg: #1d2c27;
+    }
+  }
+  body { margin: 0; background: var(--bg); color: var(--fg); font: 16px/1.6 system-ui, sans-serif; }
+  .kb table { border-collapse: collapse; width: 100%; margin: 1rem 0; font-size: 0.92rem; }
+  .kb th, .kb td { border-bottom: 1px solid var(--line); padding: 0.35rem 0.5rem; text-align: left; }
+  .kb code { font-family: var(--mono); font-size: 0.88em; }
+  .kb a { color: var(--accent); }
+  .kb { max-width: 760px; margin: 0 auto; padding: 2rem 16px 4rem; }
+  .crumb { font: 0.8rem var(--mono); text-decoration: none; color: var(--muted); }
+  h1 { margin: 0.25rem 0 0.5rem; line-height: 1.2; }
+  .meta { display: flex; flex-wrap: wrap; gap: 0.5rem 1rem; color: var(--muted); font-size: 0.85rem; margin: 0; }
+  .status { border: 1px solid var(--line); border-radius: 99px; padding: 0 0.6rem; }
+  .stale { color: var(--warn); font-weight: 600; }
+  .banner { background: var(--warn-bg); color: var(--warn); padding: 0.6rem 1rem; border-radius: 6px; }
+  footer { margin-top: 3rem; color: var(--muted); font-size: 0.8rem; border-top: 1px solid var(--line); padding-top: 1rem; }
+
+aside { border-left: 4px solid var(--accent); padding: 0.5rem 1rem; margin: 1rem 0; background: var(--note-bg); }
+aside.warn { border-color: var(--warn); background: var(--warn-bg); }
+.sum { font-size: 1.1rem; } .what, .tags { color: var(--muted); font-size: 0.85em; } .none { color: var(--warn); font-weight: 600; }
+.stamp { margin: 2rem 0 0; font: 0.85rem var(--mono); color: var(--muted); } .stamp b { color: var(--accent); letter-spacing: 0.04em; }
+</style></head><body>
+<div class="kb">
+  <header>
+    <a class="crumb" href="/kb">support desk · kb</a>
+    <h1>#4471 · three problems, not one</h1>
+    <p class="meta"><span>owner <b>Jayanie Bogahawatte</b></span> <span class="status open">open</span> <span>reviewed 2026-11-07 · 0 days ago</span></p>
+  </header>
+  <main>
+<p><a href="/kb/incidents/4471">#4471</a> is marked <strong>known</strong>: one bug, one fix queued. Read report by report, it holds three problems. The queued parser fix closes only the first one.</p>
+<p class="sum"><strong>412</strong> reports merged into #4471 · <strong>3</strong> problems</p>
+<table><thead><tr><th>problem</th><th>reports</th><th>tenants</th><th>seen</th><th>intake tagged</th><th>tracked in</th></tr></thead><tbody>
+<tr><td><code>parser</code><br><span class="what">Shared parser reads day-first dates month first</span></td><td>374</td><td>11</td><td>2026-04-01 → 2026-10-04</td><td class="tags">parser ×351 · hint ×23</td><td><a href="https://github.com/jayanie-frankieone/mega-s01e03/issues/1">#1</a></td></tr>
+<tr><td><code>hint</code><br><span class="what">booking-v3 form hint says MM/DD, the form reads day first</span></td><td>33</td><td>3</td><td>2026-04-17 → 2026-09-22</td><td class="tags">hint ×18 · parser ×15</td><td><a href="https://github.com/jayanie-frankieone/mega-s01e03/issues/2">#2</a></td></tr>
+<tr><td><code>one-day</code><br><span class="what">Date moves by one day across time zones</span></td><td>5</td><td>5</td><td>2026-04-02 → 2026-10-04</td><td class="tags">parser ×5</td><td><a href="https://github.com/jayanie-frankieone/mega-s01e03/issues/3">#3</a></td></tr>
+</tbody></table>
+<aside class="warn">The parser fix will not stop the other two. Reports from booking-v3 forms and one-day moves will keep coming after it ships. Each problem now has its own ticket, linked in the table.</aside>
+<h2>The three problems</h2>
+<p><strong><code>parser</code>: the shared parser reads dates month first.</strong> Every tenant on file writes the day first, so any date with a day of 12 or less comes out with day and month swapped. This is the bug #4471 describes, and it holds most of the reports.</p>
+<p><strong><code>hint</code>: the booking-v3 form contradicts itself.</strong> Its date field prints <code>MM/DD/YYYY</code>, but the form reads what people type the tenant's way, day first. People follow the hint, and their date gets swapped. It only happens on the booking form of tenants that run <code>booking-v3</code>. Their app and email reports are <code>parser</code>.</p>
+<p><strong><code>one-day</code>: the date moves by one day.</strong> These bodies do not swap day and month. The booking lands a day early, and where you are decides which day you see: one meeting showed as Tuesday in Lisbon and Monday in Toronto. That points at a time-zone or daylight-saving conversion, not at the parser. The desk already noted these reports (<code>oneDayMove</code>), but the #4471 page counts them under <code>parser</code>.</p>
+<h2>How this was counted</h2>
+<ul><li>The export has duplicate rows. One id is one report.</li><li>A report's problem comes from its tenant and the way it came in (<code>causes.ts</code>), not from the intake tag. Intake guesses from the reporter's browser, and it got many of these wrong.</li><li>The one-day moves are the ids in <code>desk-notes.json</code>. Every other report that names two dates names an exact day/month swap.</li><li>The table is computed from the data each time the page renders. If the desk merges more reports into #4471, the counts follow.</li></ul>
+<h2>Why they were merged</h2>
+<p><a href="/kb/decisions/0001-dedupe-by-subject">Decision 0001</a> merges reports whose subject lines match, without reading the body. All three problems arrive with the same subjects ("Wrong day on the invite", "Date is wrong"), so they all landed in one ticket. Subject lines say how a problem looks, not what causes it.</p>
+<p class="stamp">desk ref <b>DR-KTYD-Q5F1</b></p>
+  </main>
+  <footer>Pages are written by people. Tables and charts are built from data at render time.</footer>
+</div>
+</body></html>

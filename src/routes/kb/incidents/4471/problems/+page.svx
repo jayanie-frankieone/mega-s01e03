@@ -1,0 +1,66 @@
+---
+layout: runbook
+title: '#4471 · three problems, not one'
+owner: Jayanie Bogahawatte
+status: open
+reviewed: 2026-11-07
+signature: Jayanie Bogahawatte
+---
+
+<script>
+  import ProblemTable from '#lib/kb/ProblemTable.svelte';
+  import Callout from '#lib/kb/Callout.svelte';
+  import RenderStamp from '#lib/kb/RenderStamp.svelte';
+
+  const issues = {
+    parser: 'https://github.com/jayanie-frankieone/mega-s01e03/issues/1',
+    hint: 'https://github.com/jayanie-frankieone/mega-s01e03/issues/2',
+    'one-day': 'https://github.com/jayanie-frankieone/mega-s01e03/issues/3',
+  };
+</script>
+
+[#4471](/kb/incidents/4471) is marked **known**: one bug, one fix queued. Read report by report,
+it holds three problems. The queued parser fix closes only the first one.
+
+<ProblemTable ticket={4471} {issues} />
+
+<Callout kind="warn">
+The parser fix will not stop the other two. Reports from booking-v3 forms and one-day moves will
+keep coming after it ships. Each problem now has its own ticket, linked in the table.
+</Callout>
+
+## The three problems
+
+**`parser`: the shared parser reads dates month first.** Every tenant on file writes the day
+first, so any date with a day of 12 or less comes out with day and month swapped. This is the
+bug #4471 describes, and it holds most of the reports.
+
+**`hint`: the booking-v3 form contradicts itself.** Its date field prints `MM/DD/YYYY`, but the
+form reads what people type the tenant's way, day first. People follow the hint, and their date
+gets swapped. It only happens on the booking form of tenants that run `booking-v3`. Their app and
+email reports are `parser`.
+
+**`one-day`: the date moves by one day.** These bodies do not swap day and month. The booking
+lands a day early, and where you are decides which day you see: one meeting showed as Tuesday in
+Lisbon and Monday in Toronto. That points at a time-zone or daylight-saving conversion, not at the
+parser. The desk already noted these reports (`oneDayMove`), but the #4471 page counts them under
+`parser`.
+
+## How this was counted
+
+- The export has duplicate rows. One id is one report.
+- A report's problem comes from its tenant and the way it came in (`causes.ts`), not from the
+  intake tag. Intake guesses from the reporter's browser, and it got many of these wrong.
+- The one-day moves are the ids in `desk-notes.json`. Every other report that names two dates
+  names an exact day/month swap.
+- The table is computed from the data each time the page renders. If the desk merges more
+  reports into #4471, the counts follow.
+
+## Why they were merged
+
+[Decision 0001](/kb/decisions/0001-dedupe-by-subject) merges reports whose subject lines match,
+without reading the body. All three problems arrive with the same subjects ("Wrong day on the
+invite", "Date is wrong"), so they all landed in one ticket. Subject lines say how a problem
+looks, not what causes it.
+
+<RenderStamp {signature} />
